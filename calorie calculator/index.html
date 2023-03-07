@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Calorie Intake Calculator</title>
+	<style>
+		body {
+			background-color: #f7f7f7;
+			font-family: Arial, sans-serif;
+			margin: 0;
+			padding: 0;
+		}
+
+		.container {
+			background-color: #fff;
+			border-radius: 8px;
+			box-shadow: 0 0 16px rgba(0,0,0,0.1);
+			margin: 20px auto;
+			max-width: 600px;
+			padding: 20px;
+		}
+
+		h1 {
+			color: #333;
+			text-align: center;
+		}
+
+		form {
+			display: flex;
+			flex-wrap: wrap;
+			justify-content: space-between;
+		}
+
+		label {
+			color: #555;
+			display: block;
+			margin-bottom: 5px;
+		}
+
+		select,
+		input[type="number"] {
+			background-color: #f7f7f7;
+			border: none;
+			border-radius: 4px;
+			box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+			color: #333;
+			font-size: 16px;
+			padding: 10px;
+			width: 100%;
+		}
+
+		button {
+			background-color: #333;
+			border: none;
+			border-radius: 4px;
+			color: #fff;
+			cursor: pointer;
+			font-size: 16px;
+			margin-top: 10px;
+			padding: 10px;
+			width: 100%;
+		}
+
+		button:hover {
+			background-color: #444;
+		}
+
+		.result {
+			background-color: #eee;
+			border-radius: 4px;
+			margin-top: 20px;
+			padding: 10px;
+		}
+
+		.result span {
+			font-size: 20px;
+			font-weight: bold;
+		}
+	</style>
+	<script>
+		function calculate() {
+  // Get user input
+  const gender = document.getElementById("gender").value;
+  const age = parseInt(document.getElementById("age").value);
+  const height = parseInt(document.getElementById("height").value);
+  const weight = parseInt(document.getElementById("weight").value);
+  const activity = document.getElementById("activity").value;
+
+  // Calculate Basal Metabolic Rate (BMR)
+  let bmr;
+  if (gender === "male") {
+    bmr = 88.36 + (13.4 * weight) + (4.8 * height) - (5.7 * age);
+  } else {
+    bmr = 447.6 + (9.2 * weight) + (3.1 * height) - (4.3 * age);
+  }
+
+  // Calculate Total Daily Energy Expenditure (TDEE)
+  let tdee;
+  switch (activity) {
+    case "sedentary":
+      tdee = bmr * 1.2;
+      break;
+    case "lightly active":
+      tdee = bmr * 1.375;
+      break;
+    case "moderately active":
+      tdee = bmr * 1.55;
+      break;
+    case "very active":
+      tdee = bmr * 1.725;
+      break;
+    case "extra active":
+      tdee = bmr * 1.9;
+      break;
+  }
+
+  // Calculate daily calorie needs for weight maintenance, loss, and gain
+  const maintenance = Math.round(tdee);
+  const weight_loss = Math.round(tdee - 500);
+  const weight_gain = Math.round(tdee + 500);
+
+  // Calculate body fat percentage
+  const body_fat = Math.round((1.2 * weight / height / height - 0.23) * 100);
+
+  // Calculate lean body mass (LBM) and total body water (TBW)
+  let lbm, tbw;
+  if (gender === "male") {
+    lbm = (0.407 * weight) + (0.267 * height) - 19.2;
+    tbw = (2.447 - (0.09145 * age) + (0.1074 * height) + (0.3362 * weight)) / 1000;
+  } else {
+    lbm = (0.252 * weight) + (0.473 * height) - 48.3;
+    tbw = (2.097 - (0.1069 * age) + (0.2466 * height) + (0.3314 * weight)) / 1000;
+  }
+
+  // Update the HTML with the results
+  document.getElementById("bmr").textContent = Math.round(bmr);
+  document.getElementById("tdee").textContent = Math.round(tdee);
+  document.getElementById("maintenance").textContent = maintenance;
+  document.getElementById("weight_loss").textContent = weight_loss;
+  document.getElementById("weight_gain").textContent = weight_gain;
+  document.getElementById("body_fat").textContent = body_fat;
+  document.getElementById("lbm").textContent = lbm.toFixed(2);
+  document.getElementById("tbw").textContent = tbw.toFixed(2);
+}
+	</script>
+</head>
+<body>
+	<div class="container">
+		<h1>Calorie Intake Calculator</h1>
+		<form>
+			<div>
+				<label for="gender">Gender:</label>
+				<select id="gender">
+					<option value="male">Male</option>
+					<option value="female">Female</option>
+				</select>
+			</div>
+			<div>
+				<label for="age">Age:</label>
+				<input type="number" id="age">
+			</div>
+			<div>
+				<label for="height">Height (cm):</label>
+				<input type="number" id="height">
+			</div>
+			<div>
+				<label for="weight">Weight (kg):</label>
+				<input type="number" id="weight">
+			</div>
+			<div>
+				<label for="activity">Activity Level:</label>
+				<select id="activity">
+					<option value="sedentary">Sedentary</option>
+					<option value="lightly active">Lightly Active</option>
+					<option value="moderately active">Moderately Active</option>
+					<option value="very active">Very Active</option>
+					<option value="extra active">Extra Active</option>
+				</select>
+			</div>
+			<button onclick="calculate()">Calculate</button>
+		</form>
+		<div class="result" id="result">
+			<span></span>
+			<p>Your Basal Metabolic Rate (BMR) is: <span id="bmr"></span> calories/day</p>
+			<p>Your Total Daily Energy Expenditure (TDEE) is: <span id="tdee"></span> calories/day</p>
+			<p>To maintain your current weight, you should consume: <span id="maintenance"></span> calories/day</p>
+			<p>To lose weight, you should consume: <span id="weight_loss"></span> calories/day</p>
+			<p>To gain weight, you should consume: <span id="weight_gain"></span> calories/day</p>
+			<p>Your body fat percentage is: <span id="body_fat"></span>%</p>
+			<p>Your Lean Body Mass (LBM) is: <span id="lbm"></span> kg</p>
+			<p>Your Total Body Water (TBW) is: <span id="tbw"></span> liters</p>
+		</div>
+	</div>
+</body>
+
+</html>
